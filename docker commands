@@ -1,0 +1,26 @@
+aws ecs create-service \
+  --cluster jenkins-cluster \
+  --service-name jenkins-service \
+  --task-definition jenkins-master \
+  --desired-count 1 \
+  --launch-type FARGATE \
+  --network-configuration "awsvpcConfiguration={subnets=[subnet-0afb505cd477cf645],securityGroups=[sg-09fa6a31d213d2e47],assignPublicIp=ENABLED}"
+
+
+  # Check subnet's VPC
+aws ec2 describe-subnets --subnet-ids subnet-0afb505cd477cf645 --query 'Subnets[*].VpcId'
+
+# Check security group's VPC
+aws ec2 describe-security-groups --group-ids sg-09fa6a31d213d2e47 --query 'SecurityGroups[*].VpcId'
+
+
+aws ecs list-tasks --cluster jenkins-cluster
+aws ecs describe-tasks --cluster jenkins-cluster --tasks 8a12c421fef442a6b4564cb2ff9cd628
+
+
+aws ec2 describe-network-interfaces \
+  --filters Name=description,Values="*8a12c421fef442a6b4564cb2ff9cd628*"
+
+
+aws ec2 describe-network-interfaces \
+  --network-interface-ids eni-0db4c67dfacaa3009

@@ -1,0 +1,27 @@
+{
+  "family": "jenkins-master",
+  "networkMode": "awsvpc",
+  "cpu": "512",
+  "memory": "1024",
+  "requiresCompatibilities": ["FARGATE"],
+  "executionRoleArn": "arn:aws:iam::830325870550:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "jenkins-master",
+      "image": "830325870550.dkr.ecr.us-east-1.amazonaws.com/jenkins-master:latest",
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "hostPort": 8080,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true
+    }
+  ]
+}
+
+
+
+
+
