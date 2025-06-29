@@ -24,3 +24,101 @@ aws ec2 describe-network-interfaces \
 
 aws ec2 describe-network-interfaces \
   --network-interface-ids eni-0db4c67dfacaa3009
+
+
+
+    aws ecs register-task-definition --cli-input-json file://jenkins-task.json
+     aws ecs create-service   --cluster jenkins-cluster   --service-name jenkins-service   --task-definition jenkins-master   --desired-count 1   --launch-type FARGATE   --network-configuration "awsvpcConfiguration={subnets=[subnet-0afb505cd477cf645],securityGroups=[sg-04b06265ee065832d],assignPublicIp=ENABLED}"
+     aws ec2 describe-subnets --subnet-ids subnet-0afb505cd477cf645 --query 'Subnets[*].VpcId'
+   59  aws ec2 describe-security-groups --group-ids sg-04b06265ee065832d --query 'SecurityGroups[*].VpcId'
+   60  aws ec2 describe-security-groups --group-ids sg-09fa6a31d213d2e47 --query 'SecurityGroups[*].VpcId'
+   61  aws ec2 describe-subnets --subnet-ids subnet-0afb505cd477cf645 --query 'Subnets[*].VpcId'
+   62  aws ecs create-service   --cluster jenkins-cluster   --service-name jenkins-service   --task-definition jenkins-master   --desired-count 1   --launch-type FARGATE   --network-configuration "awsvpcConfiguration={subnets=[subnet-0afb505cd477cf645],securityGroups=[sg-09fa6a31d213d2e47],assignPublicIp=ENABLED}"
+   63  aws iam update-assume-role-policy   --role-name ecsTaskExecutionRole   --policy-document '{
+   64      "Version": "2012-10-17",
+   65      "Statement": [
+   66        {
+   67          "Effect": "Allow",
+   68          "Principal": {
+   69            "Service": "ecs-tasks.amazonaws.com"
+   70          },
+   71          "Action": "sts:AssumeRole"
+   72        }
+   73      ]
+   74    }'
+   75  aws iam attach-role-policy   --role-name ecsTaskExecutionRole   --policy-arn arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+   76  aws iam create-role   --role-name ecsTaskExecutionRole   --assume-role-policy-document '{
+   77      "Version": "2012-10-17",
+   78      "Statement": [
+   79        {
+   80          "Effect": "Allow",
+   81          "Principal": {
+   82            "Service": "ecs-tasks.amazonaws.com"
+   83          },
+   84          "Action": "sts:AssumeRole"
+   85        }
+   86      ]
+   87    }'
+   88  aws iam attach-role-policy   --role-name ecsTaskExecutionRole   --policy-arn arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+   89  aws iam get-role --role-name ecsTaskExecutionRole
+   90  aws ecs delete-service   --cluster your-cluster-name   --service jenkins-service   --force
+   91  aws ecs delete-service   --cluster jenkins-cluster  --service jenkins-service   --force
+   92  aws ecs create-service   --cluster jenkins-cluster   --service-name jenkins-service   --task-definition jenkins-master   --desired-count 1   --launch-type FARGATE   --network-configuration "awsvpcConfiguration={subnets=[subnet-0afb505cd477cf645],securityGroups=[sg-09fa6a31d213d2e47],assignPublicIp=ENABLED}"
+   93  aws ecs list-tasks --cluster jenkins-cluster
+   94  aws ecs describe-tasks --cluster jenkins-clustere --tasks 6c8c7208a4114886bd34abbab640dd0a
+   95  aws ecs describe-tasks --cluster jenkins-cluster --tasks 6c8c7208a4114886bd34abbab640dd0a
+   96  aws ec2 describe-network-interfaces   --filters Name=description,Values="*6c8c7208a4114886bd34abbab640dd0a*"
+   97  qaws ec2 describe-network-interfaces   --network-interface-ids eni-048637b4b751053f2
+   98  aws ec2 describe-network-interfaces   --network-interface-ids eni-048637b4b751053f2
+   99  aws ecs update-service   --cluster jenkins-cluster   --service jenkins-service   --force-new-deployment
+  100  aws ec2 describe-network-interfaces   --filters Name=description,Values="*8a12c421fef442a6b4564cb2ff9cd628*"
+  101  aws ecs describe-tasks --cluster jenkins-clustere --tasks 6c8c7208a4114886bd34abbab640dd0a
+  102  aws ecs describe-tasks --cluster jenkins-cluster --tasks 6c8c7208a4114886bd34abbab640dd0a
+  103  aws ecs describe-tasks --cluster jenkins-cluster --tasks 8a12c421fef442a6b4564cb2ff9cd628
+  104  aws ec2 describe-network-interfaces   --network-interface-ids eni-0db4c67dfacaa3009
+  105  history
+  106  aws ecs describe-task-definition   --task-definition jenkins-master   --query 'taskDefinition.{ExecutionRole:executionRoleArn,TaskRole:taskRoleArn}'
+  107  aws iam get-role --role-name ecsTaskExecutionRole   --query 'Role.AssumeRolePolicyDocument'
+  108  aws iam list-attached-role-policies --role-name ecsTaskExecutionRole
+  aws iam get-policy-version   --policy-arn arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy   --version-id v1
+  
+  ******--- ALB----*****
+  aws elbv2 create-target-group \
+  --name jenkins-tg \
+  --protocol HTTP \
+  --port 8080 \
+  --target-type ip \
+  --vpc-id vpc-05598f17794499196
+
+
+  aws elbv2 create-load-balancer \
+  --name jenkins-alb \
+  --subnets subnet-0afb505cd477cf645 \
+  --security-groups sg-09fa6a31d213d2e47 \
+  --scheme internet-facing \
+  --type application \
+  --ip-address-type ipv4
+
+
+  aws elbv2 create-listener \
+  --load-balancer-arn arn:aws:elasticloadbalancing:us-east-1:830325870550:loadbalancer/app/jenkins-alb/6bff8e37988b3440 \
+  --protocol HTTP \
+  --port 80 \
+  --default-actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:us-east-1:830325870550:targetgroup/jenkins-tg/170fb9a9f4ccc01b
+
+aws ecs update-service \
+  --cluster jenkins-cluster \
+  --service jenkins-service  \
+  --force-new-deployment \
+  --load-balancers targetGroupArn=arn:aws:elasticloadbalancing:us-east-1:830325870550:targetgroup/jenkins-tg/170fb9a9f4ccc01b,containerName=jenkins-master,containerPort=8080
+
+
+aws elbv2 create-load-balancer   --name jenkins-alb   --subnets subnet-0afb505cd477cf645   --security-groups sg-09fa6a31d213d2e47   --scheme internet-facing   --type application   --ip-address-type ipv4
+aws elbv2 create-load-balancer   --name jenkins-alb   --subnets subnet-0afb505cd477cf645 subnet-0d802347f4c3838b1  --security-groups sg-09fa6a31d213d2e47   --scheme internet-facing   --type application   --ip-address-type ipv4
+aws elbv2 describe-target-groups
+aws elbv2 describe-load-balancers
+aws elbv2 create-listener   --load-balancer-arn arn:aws:elasticloadbalancing:us-east-1:830325870550:loadbalancer/app/jenkins-alb/6bff8e37988b3440   --protocol HTTP   --port 80   --default-actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:us-east-1:830325870550:targetgroup/jenkins-tg/170fb9a9f4ccc01b
+
+***---update service --***
+aws ecs update-service   --cluster jenkins-cluster   --service jenkins-service    --force-new-deployment   --load-balancers targetGroupArn=arn:aws:elasticloadbalancing:us-east-1:830325870550:targetgroup/jenkins-tg/170fb9a9f4ccc01b,containerName=jenkins-master,containerPort=8080
+aws elbv2 describe-load-balancers
