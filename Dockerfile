@@ -5,7 +5,7 @@ USER root
 
 # Install Amazon Corretto 21
 ENV JAVA_HOME=/opt/amazon-corretto-21
-ENV PATH="$JAVA_HOME/bin:$PATH"
+ENV PATH=$JAVA_HOME/bin:$PATH
 
 RUN curl -L -o corretto21.tar.gz https://corretto.aws/downloads/latest/amazon-corretto-21-x64-linux-jdk.tar.gz \
     && mkdir -p /opt/amazon-corretto-21 \
