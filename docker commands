@@ -65,14 +65,14 @@ aws ec2 describe-network-interfaces \
    91  aws ecs delete-service   --cluster jenkins-cluster  --service jenkins-service   --force
    92  aws ecs create-service   --cluster jenkins-cluster   --service-name jenkins-service   --task-definition jenkins-master   --desired-count 1   --launch-type FARGATE   --network-configuration "awsvpcConfiguration={subnets=[subnet-0afb505cd477cf645],securityGroups=[sg-09fa6a31d213d2e47],assignPublicIp=ENABLED}"
    93  aws ecs list-tasks --cluster jenkins-cluster
-   94  aws ecs describe-tasks --cluster jenkins-clustere --tasks 6c8c7208a4114886bd34abbab640dd0a
+   94  aws ecs describe-tasks --cluster jenkins-cluster --tasks 6c8c7208a4114886bd34abbab640dd0a
    95  aws ecs describe-tasks --cluster jenkins-cluster --tasks 6c8c7208a4114886bd34abbab640dd0a
    96  aws ec2 describe-network-interfaces   --filters Name=description,Values="*6c8c7208a4114886bd34abbab640dd0a*"
    97  qaws ec2 describe-network-interfaces   --network-interface-ids eni-048637b4b751053f2
    98  aws ec2 describe-network-interfaces   --network-interface-ids eni-048637b4b751053f2
    99  aws ecs update-service   --cluster jenkins-cluster   --service jenkins-service   --force-new-deployment
   100  aws ec2 describe-network-interfaces   --filters Name=description,Values="*8a12c421fef442a6b4564cb2ff9cd628*"
-  101  aws ecs describe-tasks --cluster jenkins-clustere --tasks 6c8c7208a4114886bd34abbab640dd0a
+  101  aws ecs describe-tasks --cluster jenkins-cluster --tasks 6c8c7208a4114886bd34abbab640dd0a
   102  aws ecs describe-tasks --cluster jenkins-cluster --tasks 6c8c7208a4114886bd34abbab640dd0a
   103  aws ecs describe-tasks --cluster jenkins-cluster --tasks 8a12c421fef442a6b4564cb2ff9cd628
   104  aws ec2 describe-network-interfaces   --network-interface-ids eni-0db4c67dfacaa3009
